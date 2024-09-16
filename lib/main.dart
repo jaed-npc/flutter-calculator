@@ -125,9 +125,37 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     }
   }
 
+  // Custom logic for squaring a number
+  void _square() {
+    try {
+      final expression = Expression.parse(_expression);
+      final evaluator = const ExpressionEvaluator();
+      final result = evaluator.eval(expression, {});
+
+      setState(() {
+        _result = (result * result).toString(); // Square the result
+        _expression = '$_expression² = $_result';
+      });
+    } catch (e) {
+      setState(() {
+        _result = 'Error';
+      });
+    }
+  }
+
   Widget _buildButton(String value, {Color? color}) {
     return ElevatedButton(
-      onPressed: () => value == 'C' ? _clear() : value == '=' ? _calculate() : _onButtonPressed(value),
+      onPressed: () {
+        if (value == 'C') {
+          _clear();
+        } else if (value == '=') {
+          _calculate();
+        } else if (value == 'x²') {
+          _square(); // Custom square logic
+        } else {
+          _onButtonPressed(value);
+        }
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: color ?? Colors.grey[850],
         padding: const EdgeInsets.all(20.0),
@@ -174,6 +202,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   _buildRow(['4', '5', '6', '*']),
                   _buildRow(['1', '2', '3', '-']),
                   _buildRow(['C', '0', '=', '+']),
+                  _buildRow(['x²', '%']), // New row with square and modulo buttons
                 ],
               ),
             ),
